@@ -20,12 +20,15 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.espresso.PerformException;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -33,6 +36,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -50,9 +54,18 @@ public class RecyclerViewSampleTest {
      * Use {@link ActivityScenario} to create and launch the activity under test. This is a
      * replacement for {@link androidx.test.rule.ActivityTestRule}.
      */
-    @Before
-    public void launchActivity() {
-        ActivityScenario.launch(MainActivity.class);
+    @Rule
+    public ActivityScenarioRule<MainActivity> activityScenarioRule =
+        new ActivityScenarioRule<MainActivity>(MainActivity.class);
+
+    @Test(expected = PerformException.class)
+    public void itemWithText_doesNotExist() {
+        // Attempt to scroll to an item that contains the special text.
+        onView(ViewMatchers.withId(R.id.recyclerView))
+                // scrollTo will fail the test if no item matches.
+                .perform(RecyclerViewActions.scrollTo(
+                        hasDescendant(withText("not in the list"))
+                ));
     }
 
     @Test
