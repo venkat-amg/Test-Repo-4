@@ -1,6 +1,6 @@
 name: TestConfigurationSample
 todo:
-  keyword: "@makeAnIssue"
+  keyword: "@todo"
 on:
   push:
     branches:
